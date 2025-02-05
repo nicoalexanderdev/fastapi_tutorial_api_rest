@@ -59,3 +59,21 @@ async def create_blog(id: int = Body(), title: str = Body(), subtitle: str = Bod
         }
     )
     return blog_list
+
+@app.put("/blogs/{id}", tags=['Blog'])
+async def update_blog(id: int, title: str = Body(), subtitle: str = Body(), author: str = Body(), date: str = Body(), category: str = Body()):
+    for blog in blog_list:
+        if blog['id'] == id:
+            blog['title'] = title
+            blog['subtitle'] = subtitle
+            blog['author'] = author
+            blog['date'] = date
+            blog['category'] = category
+    return blog_list
+
+@app.delete("/blogs/{id}", tags=['Blog'])
+async def delete_blog(id: int):
+    for blog in blog_list:
+        if blog['id'] == id:
+            blog_list.remove(blog)
+    return blog_list
