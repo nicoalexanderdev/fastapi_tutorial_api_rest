@@ -1,4 +1,21 @@
 from fastapi import Body, FastAPI
+from pydantic import BaseModel
+from typing import Optional, List
+
+class Blog(BaseModel):
+    id: int
+    title: str
+    subtitle: str
+    author: str
+    date: str
+    category: str
+
+class BlogUpdate(BaseModel):
+    title: str
+    subtitle: str
+    author: str
+    date: str
+    category: str
 
 app = FastAPI()
 
@@ -28,51 +45,54 @@ blog_list = [
 async def root():
     return {"message": "Bienvenido a la API Rest de mi blog de programación"}
 
+
+
 @app.get("/blogs", tags=['Blog'])
-async def all_blogs():
+async def all_blogs() -> List[Blog]:
     return blog_list
 
+
+
 @app.get("/blogs/{id}", tags=['Blog'])
-async def get_blog(id: int):
+async def get_blog(id: int) -> Blog:
     for blog in blog_list:
         if blog['id'] == id:
             return blog
     return []
 
+
+
 @app.get("/blogs/", tags=['Blog'])
-async def get_blog_by_category(category: str):
+async def get_blog_by_category(category: str) -> Blog:
     for blog in blog_list:
         if blog['category'] == category:
             return blog
     return []
 
+
+
 @app.post("/blogs", tags=['Blog'])
-async def create_blog(id: int = Body(), title: str = Body(), subtitle: str = Body(), author: str = Body(), date: str = Body(), category: str = Body()):
-    blog_list.append(
-        {
-            "id" : id,
-            "title" : title,
-            "subtitle" : subtitle,
-            "author" : author,
-            "date" : date,
-            "category" : category
-        }
-    )
+async def create_blog(blog: Blog) -> List[Blog]:
+    blog_list.append(blog.model_dump())
     return blog_list
+
+
 
 @app.put("/blogs/{id}", tags=['Blog'])
-async def update_blog(id: int, title: str = Body(), subtitle: str = Body(), author: str = Body(), date: str = Body(), category: str = Body()):
-    for blog in blog_list:
-        if blog['id'] == id:
-            blog['title'] = title
-            blog['subtitle'] = subtitle
-            blog['author'] = author
-            blog['date'] = date
-            blog['category'] = category
+async def update_blog(id: int, blog: BlogUpdate) -> List[Blog]:
+    for item in blog_list:
+        if item['id'] == id:
+            item['title'] = blog.title
+            item['subtitle'] = blog.subtitle
+            item['author'] = blog.author
+            item['date'] = blog.date
+            item['category'] = blog.category
     return blog_list
 
+
+
 @app.delete("/blogs/{id}", tags=['Blog'])
-async def delete_blog(id: int):
+async def delete_blog(id: int) -> List[Blog]:
     for blog in blog_list:
         if blog['id'] == id:
             blog_list.remove(blog)
