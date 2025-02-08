@@ -1,99 +1,144 @@
 from fastapi import Body, FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
+import datetime
 
-class Blog(BaseModel):
-    id: int
-    title: str
-    subtitle: str
-    author: str
-    date: str
-    category: str
-
-class BlogUpdate(BaseModel):
-    title: str
-    subtitle: str
-    author: str
-    date: str
-    category: str
+'''
+    {
+        "id": 1,
+        "title": "API Portafolio",
+        "urlname": "api-portafolio",
+        "subtitle": "Backend Robusto en Go para la Gestión de los proyectos de mi Portafolio Profesional",
+        "description": "API RESTful desarrollada con Go y Gin-Gonic que proporciona un backend escalable y de alto rendimiento para la gestión de mis proyectos profesionales. Implementa una arquitectura limpia con patrones Repository y Service, integración con MongoDB Atlas para el almacenamiento persistente, y mejores prácticas de desarrollo como inyección de dependencias y manejo de configuración mediante variables de entorno. La API ofrece endpoints completos para operaciones CRUD, permitiendo una gestión eficiente de proyectos con características como validación de datos, manejo de errores personalizado y respuestas JSON estructuradas.",
+        "technologies": [
+            "GO",
+            "MongoDB"
+        ],
+        "url": "https://github.com/nicoalexanderdev/api-portafolio",
+        "monthyear": "Octubre 2024",
+        "created_at": "2024-11-01T22:07:14.542Z",
+        "updated_at": "2025-01-14T02:53:08.629Z"
+    }
+'''
 
 app = FastAPI()
 
-app.title = "API Rest blog"
-app.version = "0.1.1"
+app.title = "API Rest Portafolio Personal"
+app.version = "0.1.2"
 
-blog_list = [
-    {
-        "id": 1,
-        "title": "Estadistica para Machine Learning",
-        "subtitle": "Este es un blog para...",
-        "author": "Nicolas Oses",
-        "date": "3/2/2025",
-        "category": "data science"
-    },
-    {
-        "id": 2,
-        "title": "Estadistica para Machine Learning",
-        "subtitle": "Este es un blog para...",
-        "author": "Nicolas Oses",
-        "date": "3/2/2025",
-        "category": "programacion"
-    }
-]
+class Project(BaseModel):
+    id: int
+    title: str
+    urlname: str
+    subtitle: str
+    description: str
+    technologies: List[str]
+    url: str
+    monthyear: str
+    created_at: str
+    updated_at: str
+
+
+class ProjectCreate(BaseModel):
+    id: int
+    title: str = Field(min_length=5, max_length=20)
+    urlname: str
+    subtitle: str
+    description: str
+    technologies: List[str]
+    url: str
+    monthyear: str
+    created_at: str = Field(default= str(datetime.date.today()))
+    updated_at: str = Field(default= str(datetime.date.today()))
+
+
+class ProjectUpdate(BaseModel):
+    title: str
+    urlname: str
+    subtitle: str
+    description: str
+    technologies: List[str]
+    url: str
+    monthyear: str
+    updated_at: str = Field(default= str(datetime.date.today()))
+
+
+project_list: List[Project] = []
+
+
 
 @app.get("/", tags=['Home'])
 async def root():
-    return {"message": "Bienvenido a la API Rest de mi blog de programación"}
+    return {"message": "Bienvenido a la API Rest de mi portafolio profesional"}
 
 
 
-@app.get("/blogs", tags=['Blog'])
-async def all_blogs() -> List[Blog]:
-    return blog_list
+@app.get("/projects", tags=['Project'])
+async def all_projects() -> List[Project]:
+    return project_list
 
 
-
-@app.get("/blogs/{id}", tags=['Blog'])
-async def get_blog(id: int) -> Blog:
-    for blog in blog_list:
-        if blog['id'] == id:
-            return blog
+@app.get("/projects/{id}", tags=['Project'])
+async def get_project_by_id(id: int) -> Project:
+    for project in project_list:
+        if project.id == id:
+            return project
     return []
 
 
 
-@app.get("/blogs/", tags=['Blog'])
-async def get_blog_by_category(category: str) -> Blog:
-    for blog in blog_list:
-        if blog['category'] == category:
-            return blog
+@app.get("/projects/", tags=['Project'])
+async def get_project_by_category(category: str) -> Project:
+    for project in project_list:
+        if project['category'] == category:
+            return project
     return []
 
 
 
-@app.post("/blogs", tags=['Blog'])
-async def create_blog(blog: Blog) -> List[Blog]:
-    blog_list.append(blog.model_dump())
-    return blog_list
+@app.post("/projects", tags=['Project'])
+async def create_project(project: ProjectCreate) -> List[Project]:
+    if project: 
+        project_id = len(project_list) + 1
+        new_project = Project(
+            id=project_id,
+            title=project.title,
+            urlname=project.urlname,
+            subtitle=project.subtitle,
+            description=project.description,
+            technologies=project.technologies,
+            url=project.url,
+            monthyear=project.monthyear,
+            created_at=str(datetime.date.today()),
+            updated_at=str(datetime.date.today())
+        )
+        project_list.append(new_project)
+        return project_list
+    else:
+        print("error")
 
 
 
-@app.put("/blogs/{id}", tags=['Blog'])
-async def update_blog(id: int, blog: BlogUpdate) -> List[Blog]:
-    for item in blog_list:
-        if item['id'] == id:
-            item['title'] = blog.title
-            item['subtitle'] = blog.subtitle
-            item['author'] = blog.author
-            item['date'] = blog.date
-            item['category'] = blog.category
-    return blog_list
+@app.put("/projects/{id}", tags=['Project'])
+async def update_project(id: int, project: ProjectUpdate) -> List[Project]:
+    for item in project_list:
+        if item.id == id:
+            item.title = project.title
+            item.urlname = project.urlname
+            item.subtitle = project.subtitle
+            item.description = project.description
+            item.technologies = project.technologies
+            item.url = project.url
+            item.monthyear = project.monthyear
+            item.updated_at = str(datetime.date.today())
+            
+    return project_list
 
 
 
-@app.delete("/blogs/{id}", tags=['Blog'])
-async def delete_blog(id: int) -> List[Blog]:
-    for blog in blog_list:
-        if blog['id'] == id:
-            blog_list.remove(blog)
-    return blog_list
+@app.delete("/projects/{id}", tags=['Project'])
+async def delete_project(id: int) -> List[Project]:
+    for project in project_list:
+        if project.id == id:
+            project_list.remove(project)
+    return project_list
