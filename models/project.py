@@ -9,14 +9,7 @@ project_technology = Table(
     Column('technology_id', Integer, ForeignKey('technologies.id', ondelete="CASCADE"), primary_key=True)
 )
 
-class Technology(Base):
-    __tablename__ = 'technologies'
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False, unique=True, index=True)
-    projects = relationship("Project", secondary=project_technology, back_populates="technologies")
-
-class Project(Base):
+class ProjectModel(Base):
     __tablename__ = 'projects'
 
     id = Column(Integer, primary_key=True, index=True)
@@ -24,9 +17,9 @@ class Project(Base):
     urlname = Column(String(50), unique=True, nullable=False)
     subtitle = Column(String(100))
     description = Column(String(200))
-    url = Column(String, unique=True)
+    github_url = Column(String, unique=True)
     monthyear = Column(String(20))
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
-    technologies = relationship("Technology", secondary=project_technology, back_populates="projects")
+    technologies = relationship("TechnologyModel", secondary=project_technology, back_populates="projects")
