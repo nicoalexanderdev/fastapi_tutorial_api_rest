@@ -1,17 +1,13 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from tech_schema import TechnologyResponse
-import datetime
+from .tech_schema import TechnologyResponse
 
-class ProjectCreateBase(BaseModel):
+class ProjectCreate(BaseModel):
     title: str = Field(min_length=5, max_length=20)
     urlname: str
     subtitle: str
     description: str
     github_url: str
-    monthyear: str
-    created_at: str = Field(default= str(datetime.date.today()))
-    updated_at: str = Field(default= str(datetime.date.today()))
     technologies: Optional[List[int]] = []
 
 class ProjectResponse(BaseModel):
@@ -21,9 +17,6 @@ class ProjectResponse(BaseModel):
     subtitle: str
     description: str
     github_url: str
-    monthyear: str
-    created_at: str 
-    updated_at: str
     technologies: List[TechnologyResponse] = []  # Lista de tecnologías asociadas
 
     class Config:
@@ -35,6 +28,4 @@ class ProjectUpdate(BaseModel):
     subtitle: str
     description: str
     github_url: str
-    monthyear: str
-    updated_at: str = Field(default= str(datetime.date.today()))
     technologies: Optional[List[int]] = []

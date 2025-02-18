@@ -15,11 +15,8 @@ class ProjectModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(50), unique=True, nullable=False, index=True)
     urlname = Column(String(50), unique=True, nullable=False)
-    subtitle = Column(String(100))
-    description = Column(String(200))
+    subtitle = Column(String(255))
+    description = Column(String(400))
     github_url = Column(String, unique=True)
-    monthyear = Column(String(20))
-    created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
     technologies = relationship("TechnologyModel", secondary=project_technology, back_populates="projects")
