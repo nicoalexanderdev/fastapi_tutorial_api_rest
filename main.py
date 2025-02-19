@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import technology_router, project_router
+from routers import technology_router, project_router, token_router
 from db.database import engine, Base
 
 # crear todas las tablas del modelo en la base de datos 
@@ -15,6 +15,8 @@ app.version = "0.1.2"
 async def root():
     return {"message": "Bienvenido a la API Rest de mi portafolio profesional"}
 
+# rutas
 app.include_router(technology_router.router, prefix="/api/technologies", tags=["Tecnologías"])
 app.include_router(project_router.router, prefix="/api/projects", tags=["Proyectos"])
+app.include_router(token_router.router, prefix="/api/token", tags=["Seguridad"])
 

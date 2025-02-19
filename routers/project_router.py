@@ -2,6 +2,7 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db.database import get_db
+from routers.token_router import decode_token
 from schemas.project_schema import ProjectResponse, ProjectCreate, ProjectUpdate
 from models.project import ProjectModel
 from models.technology import TechnologyModel
@@ -13,7 +14,7 @@ router = APIRouter()
 db_dependency = Annotated[Session, Depends(get_db)]
 
 @router.post("/", response_model=ProjectResponse)
-async def add_project(project_data: ProjectCreate, db: db_dependency):
+async def add_project(project_data: ProjectCreate, db: db_dependency, auth: Annotated[dict, Depends(decode_token)]):
     try:
         # Obtener tecnologías si están presentes
         technologies = []
@@ -59,7 +60,7 @@ async def get_project_by_id(id: int, db: db_dependency):
 
 
 @router.put("/{id}", response_model=ProjectResponse)
-async def update_project(id: int, project_data: ProjectUpdate, db: db_dependency):
+async def update_project(id: int, project_data: ProjectUpdate, db: db_dependency, auth: Annotated[dict, Depends(decode_token)]):
     project = db.query(ProjectModel).filter(ProjectModel.id == id).first()
 
     if not project:
@@ -91,7 +92,7 @@ async def update_project(id: int, project_data: ProjectUpdate, db: db_dependency
     
 
 @router.delete("/{id}")
-async def delete_project(id: int, db: db_dependency):
+async def delete_project(id: int, db: db_dependency, auth: Annotated[dict, Depends(decode_token)]):
     project = db.query(ProjectModel).filter(ProjectModel.id == id).first()
 
     if not project:

@@ -7,6 +7,8 @@ from db.database import get_db
 from models.technology import TechnologyModel
 from sqlalchemy.orm import Session
 
+from .token_router import decode_token
+
 router = APIRouter()
 
 # creacion de la injeccion de dependencia con la base de datos
@@ -14,7 +16,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 @router.post("/", response_model=TechnologyResponse)
-async def add_technology(technology: TechnologyCreate, db:db_dependency):
+async def add_technology(technology: TechnologyCreate, db:db_dependency, auth: Annotated[dict, Depends(decode_token)]):
     try:
         tech = TechnologyModel(name=technology.name)
         db.add(tech)
@@ -46,7 +48,7 @@ async def get_technology_by_id(id: int, db: db_dependency):
 
 
 @router.put("/{id}", response_model=TechnologyResponse)
-async def update_technology(id: int, technology_data: TechnologyBase, db: db_dependency):
+async def update_technology(id: int, technology_data: TechnologyBase, db: db_dependency, auth: Annotated[dict, Depends(decode_token)]):
     technology = db.query(TechnologyModel).filter(TechnologyModel.id == id).first()
 
     if not technology:
@@ -69,7 +71,7 @@ async def update_technology(id: int, technology_data: TechnologyBase, db: db_dep
     
 
 @router.delete("/{id}")
-async def delete_technology(id: int, db: db_dependency):
+async def delete_technology(id: int, db: db_dependency, auth: Annotated[dict, Depends(decode_token)]):
     technology = db.query(TechnologyModel).filter(TechnologyModel.id == id).first()
 
     if not technology:
