@@ -26,10 +26,9 @@ async def add_project(project_data: ProjectCreate, db: db_dependency, auth: Anno
         # Crear el proyecto
         project = ProjectModel(
             title=project_data.title,
-            urlname=project_data.urlname,
-            subtitle=project_data.subtitle,
             description=project_data.description,
             github_url=project_data.github_url,
+            image=project_data.image,
             technologies=technologies  # Relación con tecnologías
         )
         db.add(project)
@@ -75,10 +74,9 @@ async def update_project(id: int, project_data: ProjectUpdate, db: db_dependency
 
     try:
         project.title = project_data.title
-        project.subtitle = project_data.subtitle
-        project.urlname = project_data.urlname
         project.description = project_data.description
         project.github_url = project_data.github_url
+        project.image=project_data.image
         project.technologies = technologies
 
         db.commit()

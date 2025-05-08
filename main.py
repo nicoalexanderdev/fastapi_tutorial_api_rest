@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from routers import technology_router, project_router, token_router
 from db.database import engine, Base
 
@@ -9,6 +10,19 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.title = "API Rest Portafolio Personal"
 app.version = "0.1.2"
+
+origins = [
+    "https://nicolasoses.dev",
+    "http://localhost:5173",  # Para desarrollo local con React
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins= origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Metodo Home 
 @app.get("/", tags=['Home'])

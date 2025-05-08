@@ -14,9 +14,8 @@ class ProjectModel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(50), unique=True, nullable=False, index=True)
-    urlname = Column(String(50), unique=True, nullable=False)
-    subtitle = Column(String(255))
     description = Column(String(400))
     github_url = Column(String, unique=True)
+    image = Column(String, unique=True, nullable=True)
 
     technologies = relationship("TechnologyModel", secondary=project_technology, back_populates="projects")
