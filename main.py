@@ -12,7 +12,7 @@ app.title = "API Rest Portafolio Personal"
 app.version = "0.1.2"
 
 origins = [
-    "https://nicolasoses.dev/",
+    "https://nicolasoses.dev",
     "http://localhost:5173",  # Para desarrollo local con React
 ]
 
